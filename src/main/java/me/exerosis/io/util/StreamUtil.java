@@ -61,4 +61,47 @@ public class StreamUtil {
                 e.printStackTrace();
             }
     }
+
+    /**
+     * Gets bytes from InputStream
+     *
+     * @param stream
+     * The InputStream
+     * @return
+     * Returns a byte[] representation of given stream
+     */
+
+    public static byte[] getBytesFromIS(InputStream stream) {
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try {
+            int nRead;
+            byte[] data = new byte[16384];
+
+            while ((nRead = stream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+
+            buffer.flush();
+        } catch (Exception e) {
+            System.err.println("Failed to convert IS to byte[]!");
+            e.printStackTrace();
+        }
+
+        return buffer.toByteArray();
+
+    }
+
+    /**
+     * Gets bytes from class
+     *
+     * @param clazz
+     * The class
+     * @return
+     * Returns a byte[] representation of given class
+     */
+
+    public static byte[] getBytesFromClass(Class<?> clazz) {
+        return getBytesFromIS(clazz.getClassLoader().getResourceAsStream( clazz.getName().replace('.', '/') + ".class"));
+    }
 }

@@ -16,15 +16,18 @@ public class FileUtil {
     }
 
     private static File searchFolder(File folder, String uniqueContent, int depth) {
-        for (File file : folder.listFiles()) {
-            if (file.getName().contains(uniqueContent))
-                return file.getParentFile();
-            if (file.isDirectory()) {
-                File result = searchFolder(file, uniqueContent, depth++);
-                if (result != null)
-                    return getDirectoryUp(result, depth - 1);
+        if (folder != null)
+            for (File file : folder.listFiles()) {
+                if (file.getName().contains(uniqueContent))
+                    return file.getParentFile();
+                if (file.isDirectory()) {
+                    File result = searchFolder(file, uniqueContent, depth++);
+                    if (result != null)
+                        return getDirectoryUp(result, depth - 1);
+                }
             }
-        }
         return null;
     }
+
+
 }
