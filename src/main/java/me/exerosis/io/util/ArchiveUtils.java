@@ -9,35 +9,43 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class ArchiveUtils {
+    //TODO Make this whole thing not suck
     private ArchiveUtils() {
     }
 
-    public static void downloadFile(CharSequence stringURL, File directory) {
+    public static void downloadFileInto(CharSequence stringURL, File directory) {
+        try {
+            URL url = new URL(stringURL.toString());
+            unzipIntoDirectory(url.openStream(), directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static File downloadFile(CharSequence stringURL, File directory) {
         try {
             if (directory.isFile()) {
-                return;
+                return null;
             }
             directory.mkdirs();
             URL url = new URL(stringURL.toString());
-
             String urlPath = url.getPath();
             String fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1);
 
             String[] fileComponents = fileName.split("\\.");
-            String name = fileComponents[0].replace("%20", " ");
+
             String extension = "";
             if (fileComponents.length >= 2)
                 extension = fileComponents[1];
 
-            StringBuilder path = new StringBuilder(directory.getPath()).append('/').append(name);
-
             if (!extension.equals("zip"))
-                Files.copy(url.openStream(), Paths.get(path.append(extension).toString()), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(url.openStream(), Paths.get(directory.getPath() + extension), StandardCopyOption.REPLACE_EXISTING);
             else
-                unzipIntoDirectory(url.openStream(), new File(path.toString()));
-        } catch (Exception e) {
-            e.printStackTrace();
+                unzipIntoDirectory(url.openStream(), directory);
+            return directory;
+        } catch (Exception ignored) {
         }
+        return null;
     }
 
     public static void copyFile(File from, File into) {
